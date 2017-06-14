@@ -19,6 +19,20 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.Games)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Games.Count)
+            <ul>
+                @foreach (var item in Model.Games)
+                {
+                    <li>@item.Game.Name</li>
+                }
+            </ul>
+        </dd>
+
+        <dt>
             @Html.DisplayNameFor(model => model.CreateDate)
         </dt>
 

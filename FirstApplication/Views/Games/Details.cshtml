@@ -11,14 +11,6 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Genre.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Genre.Name)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.Name)
         </dt>
 
@@ -32,6 +24,20 @@
 
         <dd>
             @Html.DisplayFor(model => model.IsMultiplayer)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Genres)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Genres.Count)
+            <ul>
+                @foreach (var item in Model.Genres)
+                {
+                    <li>@item.Genre.Name</li>
+                }
+            </ul>
         </dd>
 
         <dt>
