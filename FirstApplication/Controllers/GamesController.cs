@@ -47,7 +47,11 @@ namespace FirstApplication.Controllers
         // GET: Games/Create
         public ActionResult Create()
         {
-            return View();
+            Game model = new Game() { Name = "Test" + DateTime.Now.Ticks };
+
+            ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name");
+
+            return View(model);
         }
 
         // POST: Games/Create
@@ -55,7 +59,7 @@ namespace FirstApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name,IsMultiplayer")] Game game)
+        public ActionResult Create([Bind(Include = "Name,IsMultiplayer,GenreId")] Game game, string[] GenreId)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +68,21 @@ namespace FirstApplication.Controllers
                 game.EditDate = game.CreateDate;
 
                 db.Games.Add(game);
+
+
+                foreach (string genreid in GenreId)
+                {
+                    GameGenre gamegenre = new GameGenre();
+                    gamegenre.GameGenreId = Guid.NewGuid().ToString();
+                    gamegenre.GameId = game.GameId;
+                    gamegenre.GenreId = genreid;
+                    gamegenre.CreateDate = DateTime.Now;
+                    gamegenre.EditDate = gamegenre.CreateDate;
+                    db.GameGenres.Add(gamegenre);
+                }
+                
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
@@ -95,7 +113,7 @@ namespace FirstApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "GameId,Name,IsMultiplayer")] Game game)
+        public ActionResult Edit([Bind(Include = "GameId,Name,IsMultiplayer")] Game game, string[] GenreId )
         {
             if (ModelState.IsValid)
             {
@@ -112,6 +130,19 @@ namespace FirstApplication.Controllers
                     return RedirectToAction("Index");
                 }
             }
+
+            foreach (string genreid in GenreId)
+            {
+                GameGenre gamegenre = new GameGenre();
+                gamegenre.GameGenreId = Guid.NewGuid().ToString();
+                gamegenre.GameId = game.GameId;
+                gamegenre.GenreId = genreid;
+                gamegenre.CreateDate = DateTime.Now;
+                gamegenre.EditDate = gamegenre.CreateDate;
+                db.GameGenres.Add(gamegenre);
+            }
+
+            db.SaveChanges();
             return View(game);
         }
 

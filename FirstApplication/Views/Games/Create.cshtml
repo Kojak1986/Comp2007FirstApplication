@@ -34,6 +34,18 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <ul>
+                    @foreach (var item in (SelectList)ViewBag.GenreId)
+                    {
+                        <li><input type="checkbox" id="GenreId" name="GenreId" value="@item.Value" /> @item.Text</li>
+                    }
+                </ul>
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

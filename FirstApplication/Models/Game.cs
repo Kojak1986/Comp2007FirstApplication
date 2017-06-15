@@ -20,6 +20,7 @@ namespace FirstApplication.Models
         [StringLength(250)]
         public string Name { get; set; }
 
+        [Display(Name = "IsMultiplayer")]
         public bool IsMultiplayer { get; set; }
 
         public DateTime CreateDate { get; set; }

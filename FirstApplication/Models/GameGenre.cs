@@ -27,8 +27,12 @@ namespace FirstApplication.Models
 
         public DateTime EditDate { get; set; }
 
-       
+        public override string ToString()
+        {
+            return String.Format("{0} - {1}", Game.Name, Genre.Name);
+        }
 
-        
+
+
     }
 }
