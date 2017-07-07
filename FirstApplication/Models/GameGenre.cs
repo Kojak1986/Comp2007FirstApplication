@@ -13,12 +13,14 @@ namespace FirstApplication.Models
 
         [Required]
         [StringLength(128)]
+        [Display(Name = "Genre")]
         public string GenreId { get; set; }
         [ForeignKey("GenreId")]
         public virtual Genre Genre { get; set; }
 
         [Required]
         [StringLength(128)]
+        [Display(Name = "Game")]
         public string GameId { get; set; }
         [ForeignKey("GameId")]
         public virtual Game Game { get; set; }

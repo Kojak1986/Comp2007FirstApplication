@@ -25,7 +25,7 @@ namespace FirstApplication.Models
         public DateTime EditDate { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GameGenre> Games { get; set; }
+        public virtual ICollection<GameGenre> Games { get; set; } = new HashSet<GameGenre>();
 
         public override string ToString()
         {

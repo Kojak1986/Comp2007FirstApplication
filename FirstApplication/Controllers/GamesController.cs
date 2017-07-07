@@ -47,9 +47,11 @@ namespace FirstApplication.Controllers
         // GET: Games/Create
         public ActionResult Create()
         {
-            Game model = new Game() { Name = "Test" + DateTime.Now.Ticks };
+            Game model = new Game();
+            model.Name = string.Format("Game - {0}", DateTime.Now.Ticks);
 
-            ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name");
+            //take null out??
+            ViewBag.Genres = new MultiSelectList(db.Genres.ToList(), "GenreId", "Name", model.Genres.Select(x=>x.GenreId).ToArray());
 
             return View(model);
         }
@@ -59,53 +61,78 @@ namespace FirstApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name,IsMultiplayer,GenreId")] Game game, string[] GenreId)
+        public ActionResult Create([Bind(Include = "Name,IsMultiplayer,GenreIds")] Game model, string[] GenreIds)
         {
             if (ModelState.IsValid)
-            {
-                game.GameId = Guid.NewGuid().ToString();
-                game.CreateDate = DateTime.Now;
-                game.EditDate = game.CreateDate;
+               {
 
-                db.Games.Add(game);
+                Game checkModel = db.Games.SingleOrDefault(x => x.Name == model.Name && x.IsMultiplayer == model.IsMultiplayer);
 
+                if (checkModel == null)
+                    {
+                        model.GameId = Guid.NewGuid().ToString();
+                        model.CreateDate = DateTime.Now;
+                        model.EditDate = model.CreateDate;
 
-                foreach (string genreid in GenreId)
+                        db.Games.Add(model);
+                        db.SaveChanges();
+
+                    if (GenreIds != null)
+                    {
+                        foreach (string genreid in GenreIds)
+                        {
+                            GameGenre gamegenre = new GameGenre();
+
+                            gamegenre.GameGenreId = Guid.NewGuid().ToString();
+                            gamegenre.CreateDate = DateTime.Now;
+                            gamegenre.EditDate = gamegenre.CreateDate;
+
+                            gamegenre.GameId = model.GameId;
+                            gamegenre.GenreId = genreid;
+                            db.GameGenres.Add(gamegenre);
+                        }
+                    }
+                        db.SaveChanges();
+
+                        return RedirectToAction("Index");
+                    }
+                else
                 {
-                    GameGenre gamegenre = new GameGenre();
-                    gamegenre.GameGenreId = Guid.NewGuid().ToString();
-                    gamegenre.GameId = game.GameId;
-                    gamegenre.GenreId = genreid;
-                    gamegenre.CreateDate = DateTime.Now;
-                    gamegenre.EditDate = gamegenre.CreateDate;
-                    db.GameGenres.Add(gamegenre);
+                    ModelState.AddModelError("", "Duplicate Game Found");
                 }
-                
-                db.SaveChanges();
-
-                return RedirectToAction("Index");
             }
+                
+            ViewBag.Genres = new MultiSelectList(db.Genres.ToList(), "GenreId", "Name", GenreIds);
 
-            return View(game);
+
+
+
+
+            return View(model);
         }
 
         // GET: Games/Edit/5
         public ActionResult Edit(string id)
         {
+ 
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Game game = db.Games.Find(id);
-            // Game game = db.Games.SingleOrDefault(x => x.GameId == id);
+            Game model = db.Games.Find(id);
+            
 
 
-            if (game == null)
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(game);
+
+            ViewBag.Genres = new MultiSelectList(db.Genres.ToList(), "GenreId", "Name", model.Genres.Select(x => x.GenreId).ToArray());
+
+            return View(model);
         }
 
         // POST: Games/Edit/5
@@ -113,37 +140,65 @@ namespace FirstApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "GameId,Name,IsMultiplayer")] Game game, string[] GenreId )
+        public ActionResult Edit([Bind(Include = "GameId,Name,IsMultiplayer,GenreIds")] Game model, string[] GenreIds )
         {
             if (ModelState.IsValid)
             {
-                Game tmpgame = db.Games.Find(game.GameId);
-                if (tmpgame != null)
+                Game tmpModel = db.Games.Find(model.GameId);
+                if (tmpModel != null)
                 {
-                    tmpgame.Name = game.Name;
-                    tmpgame.EditDate = DateTime.Now;
-                    tmpgame.IsMultiplayer = game.IsMultiplayer;
+                    Game checkModel = db.Games.SingleOrDefault(x => x.Name == model.Name && x.IsMultiplayer == model.IsMultiplayer
+                    && x.GameId != model.GameId);
+                    if (checkModel == null)
+                    {
+                        tmpModel.Name = model.Name;
+                        tmpModel.EditDate = DateTime.Now;
+                        tmpModel.IsMultiplayer = model.IsMultiplayer;
 
 
-                    db.Entry(tmpgame).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                        db.Entry(tmpModel).State = EntityState.Modified;
+
+                        //Items to remove
+                        var removeItems = tmpModel.Genres.Where(x => !GenreIds.Contains(x.GenreId)).ToList();
+
+                        foreach (var removeItem in removeItems)
+                        {
+                            db.Entry(removeItem).State = EntityState.Deleted;
+                        }
+
+                        if (GenreIds != null)
+                        {
+                            var addItems = GenreIds.Where(x => !tmpModel.Genres.Select(y => y.GenreId).Contains(x));
+                            //Items to add
+                            foreach (string addItem in addItems)
+                            {
+                                GameGenre gamegenre = new GameGenre();
+                                gamegenre.GameGenreId = Guid.NewGuid().ToString();
+                                gamegenre.CreateDate = DateTime.Now;
+                                gamegenre.EditDate = gamegenre.CreateDate;
+
+                                gamegenre.GameId = tmpModel.GameId;
+                                gamegenre.GenreId = addItem;
+
+                                db.GameGenres.Add(gamegenre);
+                            }
+                        }
+
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Duplicated game detected. ");
+                    }
+                    
+
                 }
             }
 
-            foreach (string genreid in GenreId)
-            {
-                GameGenre gamegenre = new GameGenre();
-                gamegenre.GameGenreId = Guid.NewGuid().ToString();
-                gamegenre.GameId = game.GameId;
-                gamegenre.GenreId = genreid;
-                gamegenre.CreateDate = DateTime.Now;
-                gamegenre.EditDate = gamegenre.CreateDate;
-                db.GameGenres.Add(gamegenre);
-            }
+            ViewBag.Genres = new MultiSelectList(db.Genres.ToList(), "GenreId", "Name", GenreIds);
 
-            db.SaveChanges();
-            return View(game);
+            return View(model);
         }
 
         // GET: Games/Delete/5
