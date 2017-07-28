@@ -1,4 +1,4 @@
-﻿namespace FirstApplication.Migrations
+namespace FirstApplication.Migrations
 {
     using System;
     using System.Data.Entity;
@@ -18,7 +18,6 @@
             context.Genres.Add(new Models.Genre { Name = "Horror" });
             context.Genres.Add(new Models.Genre { Name = "Adventure" });
             context.Genres.Add(new Models.Genre { Name = "Drama" });
-
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

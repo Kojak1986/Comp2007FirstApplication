@@ -32,6 +32,10 @@ namespace FirstApplication.Models
         [InverseProperty("Game")]
         public virtual ICollection<GameGenre> Genres { get; set; } = new HashSet<GameGenre>();
 
+        [Display(Name = "Ratings")]
+        [InverseProperty("Game")]
+        public virtual ICollection<Rating> Ratings { get; set; } = new HashSet<Rating>();
+
         public override string ToString()
         {
             return String.Format("{0}", Name);
