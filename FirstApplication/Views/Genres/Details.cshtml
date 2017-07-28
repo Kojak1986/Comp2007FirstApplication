@@ -23,11 +23,10 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Games.Count)
             <ul>
                 @foreach (var item in Model.Games)
-                {
-                    <li>@item.Game.Name</li>
+            {
+                    <li>@item.ToString()</li>
                 }
             </ul>
         </dd>
