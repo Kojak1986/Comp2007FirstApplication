@@ -16,7 +16,6 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-
         <div class="form-group">
             @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -38,13 +37,15 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Genres, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <ul>
-                    @foreach (var item in (MultiSelectList)ViewBag.Genres)
-                    {
-                        <li><input type="checkbox" value="@item.Value" name="GenreIds" @(item.Selected ? "checked" : "") /> @item.Text</li>
-                    }
-                </ul>
-                @Html.ValidationMessageFor(model => model.Genres, "", new { @class = "text-danger" })
+                <div class="checkbox">
+                    <ul>
+                        @foreach (var item in (MultiSelectList)ViewBag.Genres)
+                        {
+                            <li><input type="checkbox" value="@item.Value" name="GenreIds" @(item.Selected ? "checked" : "") /> @item.Text</li>
+                        }
+                    </ul>
+                    @Html.ValidationMessageFor(model => model.Genres, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 

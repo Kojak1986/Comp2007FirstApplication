@@ -18,9 +18,8 @@
             @Html.DisplayNameFor(model => model.IsMultiplayer)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Genres.Count)
+            @Html.DisplayNameFor(model => model.Genres)
         </th>
-       
         <th>
             @Html.DisplayNameFor(model => model.CreateDate)
         </th>
@@ -39,9 +38,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.IsMultiplayer)
             </td>
-            <th>
+            <td>
                 @Html.DisplayFor(modelItem => item.Genres.Count)
-            </th>
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreateDate)
             </td>
