@@ -49,34 +49,31 @@ namespace FirstApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "GenreId,GameId")] GameGenre gameGenre)
+        public ActionResult Create([Bind(Include = "GameId,GenreId")] GameGenre model)
         {
             if (ModelState.IsValid)
             {
-                //make sure there isnt already data saved that is the same
-                GameGenre gamedata = db.GameGenres.FirstOrDefault(x => x.GameId == gameGenre.GameId && x.GenreId == gameGenre.GenreId);
-                //validate
-                if (gamedata != null)
+                GameGenre tmpgamegenre = db.GameGenres
+                                    .SingleOrDefault(x => x.GameId == model.GameId && x.GenreId == model.GenreId);
+                if (tmpgamegenre == null)
                 {
-                    //if it is in table
-                    ModelState.AddModelError("", "Duplicate entry");
-                }
-                else
-                {
-                    //if not in table - create
-                    gameGenre.GameGenreId = Guid.NewGuid().ToString();
-                    gameGenre.CreateDate = DateTime.Now;
-                    gameGenre.EditDate = gameGenre.CreateDate;
+                    model.GameGenreId = Guid.NewGuid().ToString();
+                    model.CreateDate = DateTime.Now;
+                    model.EditDate = model.CreateDate;
 
-                    db.GameGenres.Add(gameGenre);
+                    db.GameGenres.Add(model);
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
+                else
+                {
+                    ModelState.AddModelError("", "Duplicate key found!");
+                }
             }
 
-            ViewBag.GameId = new SelectList(db.Games, "GameId", "Name", gameGenre.GameId);
-            ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", gameGenre.GenreId);
-            return View(gameGenre);
+            ViewBag.GameId = new SelectList(db.Games, "GameId", "Name", model.GameId);
+            ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", model.GenreId);
+            return View(model);
         }
 
         // GET: GameGenres/Edit/5
@@ -101,25 +98,13 @@ namespace FirstApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "GameGenreId,GenreId,GameId")] GameGenre gameGenre)
+        public ActionResult Edit([Bind(Include = "GameGenreId,CreateDate,EditDate,GameId,GenreId")] GameGenre gameGenre)
         {
             if (ModelState.IsValid)
             {
-                GameGenre tmpgameGenre = db.GameGenres.Find(gameGenre.GameGenreId);
-                if (tmpgameGenre == null)
-                {
-                    return HttpNotFound();
-                }
-                if (tmpgameGenre != null)
-                {
-                    tmpgameGenre.GameId = gameGenre.GameId;
-                    tmpgameGenre.GenreId = gameGenre.GenreId;
-                    tmpgameGenre.EditDate = DateTime.Now;
-
-                    db.Entry(tmpgameGenre).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+                db.Entry(gameGenre).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
             ViewBag.GameId = new SelectList(db.Games, "GameId", "Name", gameGenre.GameId);
             ViewBag.GenreId = new SelectList(db.Genres, "GenreId", "Name", gameGenre.GenreId);

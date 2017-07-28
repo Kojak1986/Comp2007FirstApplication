@@ -17,11 +17,7 @@ namespace FirstApplication.Controllers
         // GET: Genres
         public ActionResult Index()
         {
-            //order by name
-            var genres = db.Genres.AsQueryable();
-            genres = genres.OrderBy(x => x.Name).AsQueryable();
-
-            return View(genres.ToList());
+            return View(db.Genres.ToList());
         }
 
         // GET: Genres/Details/5

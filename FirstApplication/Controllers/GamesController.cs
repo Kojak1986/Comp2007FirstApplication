@@ -17,15 +17,7 @@ namespace FirstApplication.Controllers
         // GET: Games
         public ActionResult Index()
         {
-            // var games = db.Games.Include(g => g.GameGenres);
-            // return View(games.ToList());
-            //return View(db.Games.ToList());
-
-            var games = db.Games.AsQueryable();
-
-            //order by name
-            games = games.OrderBy(x => x.Name).AsQueryable();
-
+            var games = db.Games;
             return View(games.ToList());
         }
 
@@ -37,6 +29,7 @@ namespace FirstApplication.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Game game = db.Games.Find(id);
+
             if (game == null)
             {
                 return HttpNotFound();
@@ -50,7 +43,6 @@ namespace FirstApplication.Controllers
             Game model = new Game();
             model.Name = string.Format("Game - {0}", DateTime.Now.Ticks);
 
-            //take null out??
             ViewBag.Genres = new MultiSelectList(db.Genres.ToList(), "GenreId", "Name", model.Genres.Select(x=>x.GenreId).ToArray());
 
             return View(model);
@@ -65,15 +57,13 @@ namespace FirstApplication.Controllers
         {
             if (ModelState.IsValid)
                {
-
                 Game checkModel = db.Games.SingleOrDefault(x => x.Name == model.Name && x.IsMultiplayer == model.IsMultiplayer);
 
                 if (checkModel == null)
                     {
-                        model.GameId = Guid.NewGuid().ToString();
-                        model.CreateDate = DateTime.Now;
-                        model.EditDate = model.CreateDate;
-
+                        //model.GameId = Guid.NewGuid().ToString();
+                        //model.CreateDate = DateTime.Now;
+                       // model.EditDate = model.CreateDate;
                         db.Games.Add(model);
                         db.SaveChanges();
 
@@ -83,16 +73,20 @@ namespace FirstApplication.Controllers
                         {
                             GameGenre gamegenre = new GameGenre();
 
-                            gamegenre.GameGenreId = Guid.NewGuid().ToString();
-                            gamegenre.CreateDate = DateTime.Now;
-                            gamegenre.EditDate = gamegenre.CreateDate;
+                            //gamegenre.GameGenreId = Guid.NewGuid().ToString();
+                            //gamegenre.CreateDate = DateTime.Now;
+                           // gamegenre.EditDate = gamegenre.CreateDate;
 
                             gamegenre.GameId = model.GameId;
                             gamegenre.GenreId = genreid;
                             db.GameGenres.Add(gamegenre);
                         }
-                    }
+
+                        db.Entry(model).State = EntityState.Modified;
+
                         db.SaveChanges();
+                    }
+                        
 
                         return RedirectToAction("Index");
                     }
@@ -104,27 +98,17 @@ namespace FirstApplication.Controllers
                 
             ViewBag.Genres = new MultiSelectList(db.Genres.ToList(), "GenreId", "Name", GenreIds);
 
-
-
-
-
             return View(model);
         }
 
         // GET: Games/Edit/5
         public ActionResult Edit(string id)
         {
- 
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
             Game model = db.Games.Find(id);
-            
-
-
             if (model == null)
             {
                 return HttpNotFound();
@@ -147,8 +131,11 @@ namespace FirstApplication.Controllers
                 Game tmpModel = db.Games.Find(model.GameId);
                 if (tmpModel != null)
                 {
-                    Game checkModel = db.Games.SingleOrDefault(x => x.Name == model.Name && x.IsMultiplayer == model.IsMultiplayer
-                    && x.GameId != model.GameId);
+                    Game checkModel = db.Games.SingleOrDefault(
+                                        x => x.Name == model.Name && 
+                                        x.IsMultiplayer == model.IsMultiplayer && 
+                                        x.GameId != model.GameId);
+
                     if (checkModel == null)
                     {
                         tmpModel.Name = model.Name;
@@ -191,8 +178,6 @@ namespace FirstApplication.Controllers
                     {
                         ModelState.AddModelError("", "Duplicated game detected. ");
                     }
-                    
-
                 }
             }
 
@@ -221,15 +206,21 @@ namespace FirstApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string id)
         {
-            Game game = db.Games.Find(id);
+            Game model = db.Games.Find(id);
 
-            //delete game with genres attached
-            foreach (var genredata in game.Genres.ToList())
+            if (model == null)
             {
-                db.GameGenres.Remove(genredata);
+                return HttpNotFound();
             }
 
-            db.Games.Remove(game);
+            foreach (var item in model.Genres.ToList())
+            {
+                db.GameGenres.Remove(item);
+            }
+
+            db.Games.Remove(model);
+
+            var deleted = db.ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
