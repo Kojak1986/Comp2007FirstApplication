@@ -1,6 +1,7 @@
 namespace FirstApplication.Models
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -8,29 +9,29 @@ namespace FirstApplication.Models
 
     public partial class Game
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Game()
-        {
-            Genres = new HashSet<GameGenre>();
-        }
         [Key]
+        [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.Identity)]
         public string GameId { get; set; }
 
         [Required]
         [StringLength(250)]
+        [Display(Name = "Game Name")]
         public string Name { get; set; }
 
-        [Display(Name = "IsMultiplayer")]
+        [Display(Name = "Is Multiplayer")]
         public bool IsMultiplayer { get; set; }
 
+        [Display(Name = "Create Date")]
+        [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.Identity)]
         public DateTime CreateDate { get; set; }
 
-        public DateTime EditDate { get; set; }
+        [Display(Name = "Edit Date")]
+        public DateTime EditDate { get; set; } = DateTime.UtcNow;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [Display(Name = "Genres")]
+        [InverseProperty("Game")]
         public virtual ICollection<GameGenre> Genres { get; set; } = new HashSet<GameGenre>();
 
-        //troubleshooting help - change # string to text
         public override string ToString()
         {
             return String.Format("{0}", Name);

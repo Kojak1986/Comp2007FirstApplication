@@ -12,7 +12,6 @@ namespace FirstApplication.Models
         {
         }
 
-        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<GameGenre> GameGenres { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }

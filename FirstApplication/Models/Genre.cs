@@ -8,23 +8,28 @@ namespace FirstApplication.Models
 
     public partial class Genre
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Genre()
         {
-            Games = new HashSet<GameGenre>();
+
         }
+
         [Key]
+        [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.Identity)]
         public string GenreId { get; set; }
 
         [Required]
         [StringLength(250)]
         public string Name { get; set; }
 
+        [Display(Name = "Create Date")]
+        [DatabaseGenerated(databaseGeneratedOption: DatabaseGeneratedOption.Identity)]
         public DateTime CreateDate { get; set; }
 
-        public DateTime EditDate { get; set; }
+        [Display(Name = "Edit Date")]
+        public DateTime EditDate { get; set; } = DateTime.UtcNow;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        [Display(Name = "Games")]
+        [InverseProperty("Genre")]
         public virtual ICollection<GameGenre> Games { get; set; } = new HashSet<GameGenre>();
 
         public override string ToString()
