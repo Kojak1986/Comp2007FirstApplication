@@ -6,6 +6,7 @@ namespace FirstApplication.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Linq;
 
     public partial class Game
     {
@@ -36,6 +37,19 @@ namespace FirstApplication.Models
         [InverseProperty("Game")]
         public virtual ICollection<Rating> Ratings { get; set; } = new HashSet<Rating>();
 
+        [NotMapped]
+        public decimal OverallRating
+        {
+            get
+            {
+                if(Ratings.Count > 0)
+                {
+                    return (Ratings.Average(x => x.Rank));
+                }
+                return (9);
+            }
+        }  
+       
         public override string ToString()
         {
             return String.Format("{0}", Name);

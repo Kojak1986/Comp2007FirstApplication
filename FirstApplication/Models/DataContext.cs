@@ -16,6 +16,7 @@ namespace FirstApplication.Models
         public virtual DbSet<GameGenre> GameGenres { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
+        public virtual DbSet<Rating> Ratings { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

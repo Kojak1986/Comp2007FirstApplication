@@ -55,7 +55,34 @@
             @Html.DisplayFor(model => model.EditDate)
         </dd>
 
-    </dl>
+        <dt>
+            @Html.DisplayNameFor(model => model.Ratings)
+        </dt>
+
+        <dd>
+            @{ 
+                if (Model.Ratings.Count > 0)
+                {
+                      <p>The overall rating for @Model.Name is @Model.OverallRating</p>
+                }
+                else
+                {
+                    <p> Be the first to rate @Model.Name</p>
+                }
+            }
+            @{using (Html.BeginForm("SetRating", "Ratings"))
+                {
+                    @Html.HiddenFor(x => x.GameId)
+                    for(int i = 0; i < 10; i++)
+                    {
+                        <input type="radio" id="Rank" name="Rank" value="@i"/> @i
+                    }
+                    <input type="submit" value="Submit" />
+                }
+
+            }
+        </dd>
+   </dl>
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.GameId }) |
