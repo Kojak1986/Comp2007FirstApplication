@@ -1,23 +1,20 @@
-namespace FirstApplication.Migrations
+namespace FirstApplication.Migrations.Identity
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<FirstApplication.Models.DataContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<FirstApplication.Models.ApplicationDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            MigrationsDirectory = @"Migrations.Identity";
         }
 
-        protected override void Seed(FirstApplication.Models.DataContext context)
+        protected override void Seed(FirstApplication.Models.ApplicationDbContext context)
         {
-            context.Genres.Add(new Models.Genre { Name = "Comedy" });
-            context.Genres.Add(new Models.Genre { Name = "Horror" });
-            context.Genres.Add(new Models.Genre { Name = "Adventure" });
-            context.Genres.Add(new Models.Genre { Name = "Drama" });
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
