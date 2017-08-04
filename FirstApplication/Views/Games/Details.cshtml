@@ -59,28 +59,8 @@
             @Html.DisplayNameFor(model => model.Ratings)
         </dt>
 
-        <dd>
-            @{ 
-                if (Model.Ratings.Count > 0)
-                {
-                      <p>The overall rating for @Model.Name is @Model.OverallRating</p>
-                }
-                else
-                {
-                    <p> Be the first to rate @Model.Name</p>
-                }
-            }
-            @{using (Html.BeginForm("SetRating", "Ratings"))
-                {
-                    @Html.HiddenFor(x => x.GameId)
-                    for(int i = 0; i < 10; i++)
-                    {
-                        <input type="radio" id="Rank" name="Rank" value="@i"/> @i
-                    }
-                    <input type="submit" value="Submit" />
-                }
-
-            }
+        <dd id="RatingsControl">
+            @{ Html.RenderAction("RatingsControl", "Ratings", new { gameId = Model.GameId });}
         </dd>
    </dl>
 </div>
@@ -88,3 +68,43 @@
     @Html.ActionLink("Edit", "Edit", new { id = Model.GameId }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
+<!--jquery part-->
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        function SetRatingControlCallbacks(e){
+            var rank = $("#RatingsControl a[name= 'Rank']");
+            rank.on('click', SetRating);
+        }
+
+        function SetRating(e) {
+    
+            var data = { gameId: $(this).data("gameid"), rank: $(this).data("rank") };
+
+            $.post("@Url.Action("SetRating", "Ratings")", data)
+
+            .done(function (response, status, jqxhr) {
+                var url = "@Url.Action("RatingsControl", "Ratings")";
+                $("#RatingsControl").load(url, { gameId: data.gameId },
+                    function (responseText, statusText, xhr) {
+                        switch (statusText) {
+                            case "success":
+                                SetRatingControlCallbacks();
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (responseText.length == 0) {
+
+                        }
+                    });
+            })
+
+            .fail(function(jqxhr, status, error) {
+            })
+        }
+        $(document).ready(SetRatingControlCallbacks);
+    </script>
+}

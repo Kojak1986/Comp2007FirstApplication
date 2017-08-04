@@ -333,10 +333,10 @@
     <Content Include="Views\GameGenres\Details.cshtml" />
     <Content Include="Views\GameGenres\Edit.cshtml" />
     <Content Include="Views\GameGenres\Index.cshtml" />
+    <Content Include="Views\Ratings\_RatingsControl.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Ratings\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -1,0 +1,32 @@
+﻿@model FirstApplication.Models.Game
+
+@{
+    if (Model.Ratings.Count > 0)
+    {
+        <p>The overall rating for @Model.Name is @Model.OverallRating</p>
+    }
+    else
+    {
+        <p> Be the first to rate @Model.Name</p>
+    }
+}
+
+@{
+    for (int i = 0; i < 10; i++)
+    {
+        <a href="#" name="Rank" data-rank="@i" data-gameId="@Model.GameId" ><i class="glyphicon glyphicon-star@(Model.OverallRating < i ? "-empty" : "")"></i></a>
+    }
+
+}
+
+@*@{using (Html.BeginForm("SetRating", "Ratings"))
+    {
+        @Html.HiddenFor(x => x.GameId)
+        for (int i = 0; i < 10; i++)
+        {
+            <input type="radio" id="Rank" name="Rank" value="@i" /> @i
+        }
+        <input type="submit" value="Submit" />
+    }
+
+}*@

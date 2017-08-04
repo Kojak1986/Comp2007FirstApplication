@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 
 namespace FirstApplication.Controllers
 {
@@ -17,7 +18,7 @@ namespace FirstApplication.Controllers
             return View();
         }
 
-        public ActionResult SetRating(string gameId, decimal rank)
+        public Rating SetRating(string gameId, decimal rank)
         {
             Rating rating = new Rating();
             rating.Rank = rank;
@@ -27,7 +28,20 @@ namespace FirstApplication.Controllers
             db.Ratings.Add(rating);
             db.SaveChanges();
 
-            return RedirectToAction("Details", "Games", new { id = gameId });
+            rating = db.Ratings
+                .Include(x => x.Game)
+                .Include(x => x.Game.Ratings)
+                .Include(x => x.User)
+                .SingleOrDefault(x => x.RatingId == rating.RatingId);
+            return (rating);
+           // return RedirectToAction("Details", "Games", new { id = gameId });
+        }
+
+        public PartialViewResult RatingsControl(string gameId)
+        {
+            Game model = db.Games.Find(gameId);
+
+            return PartialView("_RatingsControl", model);
         }
     }
 }
